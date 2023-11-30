@@ -21,6 +21,7 @@ dependencies:
     - sentence-transformers==2.2.2
     - joblib==1.1.0
     - gradio==4.0.2
+    - tiktoken==0.5.1
 
 ## UNUSED
 
