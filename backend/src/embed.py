@@ -14,11 +14,38 @@ import pandas as pd
 
 
 # ================== #
+# Tokenize Text
+# ================== #
+
+# TODO: change tiktoken out to real tokenizer... or use tiktoken
+
+def get_tokens(text_2_encode: str, tokenizer=None):
+    """
+    Tokenize text in a string.
+
+    Initialize a tokenizer if tokenizer == None.
+    """
+
+    if tokenizer is None:
+        tokenizer = tiktoken.encoding_for_model("text-davinci-003")
+    return tokenizer.encode(text=text_2_encode)
+
+
+def get_num_tokens(text_2_encode: str, **kwargs):
+    """
+    Count the number of tokens in a string.
+    """
+    return len(get_tokens(text_2_encode=text_2_encode, **kwargs))
+
+
+# ================== #
 #  Get Embeddings
 # ================== #
 
-#TODO: Change this to BERT instead of OPENAI
 def get_embeddings(text=None, model=None):
+    """
+    Generate embeddings on a string of text.
+    """
     if model==None:
         model = load('./model/SentBERTmodel.pkl')
 
@@ -26,38 +53,47 @@ def get_embeddings(text=None, model=None):
 
 
 # ================== #
-#  Load Embeddings
+#  Calculate Vector Similarity
 # ================== #
-"""
-def load_embeddings(fname: str) -> "dict[tuple[str, str], list[float]]":
 
-    #Read the document embeddings and their keys from a CSV.
+def vector_similarity(x: "list[float]", y: "list[float]") -> float:
+    """
+    Returns the similarity between two vectors.
 
-    #fname is the path to a CSV with exactly these named columns:
-    #    "title", "heading", "0", "1", ... up to the length of the embedding vectors.
-    
-    df = pd.read_csv(fname, header=0)
-    max_dim = max(
-        [int(c) for c in df.columns if c != "title" and c != "heading"]
-    )
-    return {
-        (r.title): [r[str(i)] for i in range(max_dim + 1)]
-        for _, r in df.iterrows()
-    }
-
-"""
-
-
-
-
+    Because embeddings are normalized to length 1, the cosine similarity is the same as the dot product.
+    """
+    return np.dot(np.array(x), np.array(y))
 
 
 # ================== #
-#  Tokenizer
+#  Order Chunks by Similarity
 # ================== #
 
+def measure_embedding_similarity(
+    query: str,
+    embeddings
+):
+    """
+    Find the query embedding for the supplied query, and compare it against all of the pre-calculated document embeddings
+    to find the most relevant sections.
+
+    Return the list of document sections, sorted by relevance in descending order.
+    """
+    query_embedding = get_embeddings(query)
+
+    return [vector_similarity(query_embedding, embedding) for embedding in embeddings]
 
 
 # ================== #
-#  Load Model
+#  Get Similar Texts
 # ================== #
+
+def get_similar_texts(df, k):
+    """
+    Slice a dataframe on the top k results.  Sort the sliced dataframe descending on similarity score.
+
+    If there are repeated results in top 5, keep them all.
+    """
+    response = df.nlargest(k, columns=['similarity score'],keep='all')
+    response = response.sort_values(by='similarity score', ascending=False)
+    return response
