@@ -23,7 +23,11 @@ TAB1_INSTRUCTIONS = "<h3>Instructions</h3>"\
                             "<p></p>" \
                             "<li>Clicking run will perform a quick lookup.</li>"\
                             "<li>Clicking advanced search will perform a longer lookup that should return better results.</li>"\
-                            
+
+TAB2_INSTRUCTIONS = "<h3>Instructions</h3>"\
+                    f"<p>Ask a question about information in selected logbook </p> "#:<b>{session.full_filename}</b> </p>"
+
+
 TAB4_INSTRUCTIONS = "<h3>Overview</h3>"\
                     "<p>This application allows a user to have a chat experience with the Bible.</p>"\
                     "<p></p>"\

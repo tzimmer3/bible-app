@@ -1,171 +1,127 @@
 # Packages
-import time
-import gradio as gr
+import numpy as np
 import pandas as pd
+from joblib import load
+import pickle
+from sentence_transformers.cross_encoder import CrossEncoder
 import src.be_variables as be_variables
-from azure.storage.blob import ContainerClient
-
-
-from science_engine.connector import ScienceEngineConnector
-from science_engine.utils import SEConnectionConfig
+import src.fe_variables as fe_variables
 
 
 
 class GradioEngine:
 
     def __init__(self):
-        
-        # Create connection
-        connection_config = SEConnectionConfig.from_config_file(config_file="environments.ini", environment="AriesProd1")
-        self.rc = ScienceEngineConnector(config=connection_config)
 
-        self.canvas_id: str = None
+        self.verse_data = pd.read_csv(be_variables.VERSE_FILE_NAME)
 
-        # Blob Storage Config for Science Engine
-        self.data_page_name: str = be_variables.DATA_PAGE_NAME
-        self.source_type: str = be_variables.SOURCE_TYPE
-        self.storage_account_name: str = be_variables.STORAGE_ACCOUNT_NAME
-        self.blob_filepath: str = be_variables.BLOB_FILEPATH
-        self.full_filename: str = None
+        # Verse Variables
+        self.verse_page_name: str = fe_variables.TAB1_PAGE_NAME
+        self.verse_user_question: str = None
 
-        # Blob Storage Config for Listing Blob Directory
-        self.account_url: str = be_variables.ACCOUNT_URL
-        self.blob_name: str = be_variables.BLOB_NAME
-        self.blob_key: str = be_variables.BLOB_KEY
-        self.list_of_filenames_in_blob = ["Select Load Examples Button for Example Files"]
+        # Section Variables
+        self.section_page_name: str = fe_variables.TAB2_PAGE_NAME
+        self.section_user_question: str = None
 
-        # Dictionary: [key] Page Name, [value] Formula
-        self.formula_pages = be_variables.FORMULA_PAGES
+        # Chapter Variables
+        self.chapter_page_name: str = fe_variables.TAB3_PAGE_NAME
+        self.chapter_user_question: str = None
 
-        # Question Answer Stuff
-        self.qa_page_name: str = "QuestionAnswer"
-        self.user_question: str = None
-
-        # Full Logbook Stuff
-        self.digitized_page_name: str = "DigitizedData"
-        self.full_logbook_data: str = None
+     
 
 # =========== #
-# Science Engine Operations
+# Search Functionality
 # =========== #
 
-    def create_canvas(self):
-        """ Create a blank canvas """
-        self.canvas_id = self.rc.create_canvas()
+    def get_embeddings(self, text=None, model=None):
+        """
+        Generate embeddings on a string of text.
+        """
+        if model==None:
+            model = load('./model/SentBERTmodel.pkl')
 
-    def create_formula_page(self, page_name, formula):
-        """ Add a formula page to the Canvas """
-        self.rc.add_formula(name=page_name,
-                        formula=formula)    
+        return model.encode(text)
 
-    def create_data_page(self):
-        """ Add a data page to the Canvas """
-        self.rc.add_data_source(name=self.data_page_name,
-                        source_type=self.source_type,
-                        storage_account_name=self.storage_account_name,
-                        path_to_files=self.full_filename)
 
-    def update_formula_page(self):
-        """ Update a formula on an existing formula page """
-        self.rc.update_formula(name=self.qa_page_name,
-                    formula=self.updated_formula)
-        
+    def vector_similarity(self, x: "list[float]", y: "list[float]") -> float:
+        """
+        Returns the similarity between two vectors.
 
-# =========== #
-# Utility Functions
-# =========== #
+        Because embeddings are normalized to length 1, the cosine similarity is the same as the dot product.
+        """
+        return np.dot(np.array(x), np.array(y))
 
-## NOT WORKING RIGHT NOW.  NEED TO ADD TWO STRINGS TOGETHER
-    def modify_filename(self, filename):
-        """ Returns the full filepath given a filename.  Response includes a path prepended and quotes around it. """
-        ## qwerty is used to replace default [space] value.  should never split.
-        self.full_filename = list(f"{self.blob_filepath}{filename}".split("qwerty"))
-  
-    def modify_formula(self, user_question):
-        """ Modify a formula string """
-        self.updated_formula = f"ChatWithLogbook(Digitization, \"{user_question}\", FileName, IndexingList)"
 
-    def parse_response_return_answer(self):
-        """ Parses the answer from the chat response """
-        return self.chat_response[0]['Answer'].split("\n")
-    
-    def parse_response_return_logbook(self):
-        """ Parses the full logbook data page """
-        full_logbook_df = pd.DataFrame()
-        activities = []
-        timestamps = []
-        for element in self.full_logbook_data:
-            activities.append(element['activity'])
-            timestamps.append(element['timestamp'])
-        full_logbook_df['activity'] = activities
-        full_logbook_df['timestamp'] = timestamps
-        return full_logbook_df
-    
-    def export_csv(self, data):
-        """ Gradio method to prepare a dataframe object as a .csv """
-        data.to_csv("output.csv")
-        return gr.File(value="output.csv", visible=True)
+    def measure_embedding_similarity(self,
+        query: str,
+        embeddings
+        ):
+        """
+        Find the query embedding for the supplied query, and compare it against all of the pre-calculated document embeddings
+        to find the most relevant sections.
 
-    def list_blob(self):
-        """ Create a list of the files in the '/methane-pyrolysis/notebooks/' blob."""
-        container_client = ContainerClient(account_url=self.account_url, container_name= self.blob_name, credential=self.blob_key)
-        list_of_filenames_in_blob = []
-        for blob in container_client.list_blobs():
-            if blob.name.startswith("notebooks/"):
-                file = blob.name.split("/")[-1]
-                list_of_filenames_in_blob.append(file)
-        self.list_of_filenames_in_blob = list_of_filenames_in_blob
+        Return the list of document sections, sorted by relevance in descending order.
+        """
+        query_embedding = self.get_embeddings(query)
 
+        return [self.vector_similarity(query_embedding, embedding) for embedding in embeddings]
+
+
+    def get_similar_texts(self, df, k, column):
+        """
+        Slice a dataframe on the top k results.  Sort the sliced dataframe descending on similarity score.
+
+        If there are repeated results in top 5, keep them all.
+        """
+        response = df.nlargest(k, columns=[column],keep='all')
+        response = response.sort_values(by=column, ascending=False)
+        return response
+
+
+    def cross_encode(self, data, query):
+        # Sentence Combinations
+        cross_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+
+        corpus = data['text'].tolist()
+        sentence_combinations = [[query, corpus_sentence] for corpus_sentence in corpus]
+
+        data['cross_encoder_score'] = cross_encoder.predict(sentence_combinations)
+
+        data.sort_values(by='cross_encoder_score', inplace=True, ascending=False)
+
+        return data
 
 # =========== #
 # Run
 # =========== #
-    
-    def tab1_engine(self, filename):
-        """ Executes all actions for gradio app tab 1.  Executes with Run button on tab 1. """
-        # List filenames in the blob directory
-        print(self.list_of_filenames_in_blob)
-        # Create blank canvas
-        self.rc.create_canvas()        
-        # Add path to filename
-        self.modify_filename(filename)
-        # Create data page
-        if filename in self.list_of_filenames_in_blob: 
-            self.create_data_page()
-        else:
-            return f"Error importing data: File not present in blob folder."
+
+    def tab1_engine(self, question: str, run_cross_encoder="No", testament="All") -> dict[str,str]:
+        # Set up Vars
+        embeddings = self.verse_data['embeddings']
+        k=5
+
+        # Retrieve Top K Most Similar Results
+        self.verse_data['similarity score'] = self.measure_embedding_similarity(question, embeddings)
+        # Count number of tokens in each article
+        self.verse_data['token count'] = self.verse_data['text'].apply(self.get_num_tokens)
+        # Return Chunks With Highest Similarity (Text)
+        response = self.get_similar_texts(self.verse_data, k, 'similarity score')
+
+        # Remove embeddings column
+        keep_columns = ['book', "chapter", 'text', 'token count', 'similarity score']
+        response = response[keep_columns]
+
+        if run_cross_encoder=="Yes":
+            print("Cross Encoding...")
+            response = self.cross_encode(response, question)
+
+            # Return Chunks With Highest Similarity (Text)
+            response = self.get_similar_texts(response, k, 'cross_encoder_score')
         
-        # Create formula pages. Iterate dict of page names and formulas
-        for page, formula in self.formula_pages.items():
-            self.create_formula_page(page, formula)
+        
+        return response
 
-        # Error Handling.  Check if data and downstream data pages are created properly.
-        self.data_import_validation = self.rc.get_all_data_from_node(self.digitized_page_name)
-        if self.data_import_validation is None:
-            return f"Error importing data: File present, but Data page not created properly in Research Canvas. "
 
-        return f"Successfully imported data!!"
 
-    def tab2_engine(self, user_question):
-        """ Executes all actions for gradio app tab 2.  Executes with Run button on tab 2. """
-        # Update string of formula (Question Answer)
-        self.modify_formula(user_question)
-        # Update formula on page
-        self.update_formula_page()
-        # Wait for page to rerun. 8 seconds.
-        time.sleep(8)
-        # Return data from updated page
-        self.chat_response = self.rc.get_all_data_from_node(self.qa_page_name)
-        # Create df to house data
-        answer_df = pd.DataFrame()
-        # Add data to df
-        answer_df['Answer'] = self.parse_response_return_answer()
-        return answer_df
-    
-    def tab3_engine(self, input):
-        """ Executes all actions for gradio app tab 3.  Executes with Run button on tab 3. """
-        ## Input is not used ##
-        # Request data from page
-        self.full_logbook_data = self.rc.get_all_data_from_node(self.digitized_page_name)
-        # Parse string of data and return as df
-        return self.parse_response_return_logbook()
+# if __name__ == '__main__':
+#     run()
