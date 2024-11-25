@@ -2,7 +2,6 @@
 import numpy as np
 import pandas as pd
 from joblib import load
-import pickle
 from sentence_transformers.cross_encoder import CrossEncoder
 import src.be_variables as be_variables
 import src.fe_variables as fe_variables
