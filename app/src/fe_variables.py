@@ -11,9 +11,9 @@ APP_NAME = "Chat with the Bible"
 # ========= #
 
 ## Page Names
-TAB1_PAGE_NAME = "1. Verse Lookup"
-TAB2_PAGE_NAME = "2. Section Lookup"
-TAB3_PAGE_NAME = "3. Chapter Lookup"
+TAB1_PAGE_NAME = "1. Bible Lookup"
+# TAB2_PAGE_NAME = "2. Section Lookup"
+# TAB3_PAGE_NAME = "3. Chapter Lookup"
 TAB4_PAGE_NAME = "Need Help?"
 
 
