@@ -12,10 +12,18 @@ class SearchEngine:
 
     def __init__(self):
 
+        # Data
         self.verse_data = pd.read_json(be_variables.VERSE_FILE_NAME)
 
-        # Verse Variables
+        # Global App Variables
+        self.app_name = fe_variables.APP_NAME
+
+
+        # Tab 1 Variables
         self.tab1_page_name: str = fe_variables.TAB1_PAGE_NAME
+        self.tab1_title = fe_variables.TAB1_TITLE
+        self.tab1_instructions = fe_variables.TAB1_INSTRUCTIONS
+
         self.tab1_user_question: str = None
 
 
@@ -92,20 +100,22 @@ class SearchEngine:
         # Retrieve Top K Most Similar Results
         self.verse_data['similarity score'] = self.measure_embedding_similarity(question, embeddings)
 
-        # Return Chunks With Highest Similarity (Text)
-        response = self.get_similar_texts(self.verse_data, k, 'similarity score')
+        # Decide whether to cross encode or not
+        if run_cross_encoder == "Yes":
+            # Add extra k to cross encode with
+            k=75
+            # Return Chunks With Highest Similarity (Text)
+            response = self.get_similar_texts(self.verse_data, k, 'similarity score')
+            print("Cross Encoding...")
+            # Cross encode to get final response
+            response = self.cross_encode(response, question)
+        else:
+            # Return Chunks With Highest Similarity (Text)
+            response = self.get_similar_texts(self.verse_data, k, 'similarity score')
 
         # Remove embeddings column
         keep_columns = ['book', "chapter", 'text', 'similarity score']
         response = response[keep_columns]
-
-        if run_cross_encoder=="Yes":
-            print("Cross Encoding...")
-            response = self.cross_encode(response, question)
-
-            # Return Chunks With Highest Similarity (Text)
-            response = self.get_similar_texts(response, k, 'cross_encoder_score')
-        
         
         return response
 

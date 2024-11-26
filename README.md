@@ -19,6 +19,8 @@ Application for semantic search of bible text.
 - Wire up front end with SearchEngine class.  
     - All descriptions, etc.
 
+- Poetry
+
 - Extract ESV and structure, put in app/data/.  Replace in flow.
 
 - Add Section heads as a column  --  later a level of abstraction
