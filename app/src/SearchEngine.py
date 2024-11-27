@@ -94,8 +94,8 @@ class SearchEngine:
         # Pair sentences
         sentence_combinations = [[query, corpus_sentence] for corpus_sentence in corpus]
         # Predict cross encoder score
-        data['cross_encoder_score'] = cross_encoder.predict(sentence_combinations)
-        data.sort_values(by='cross_encoder_score', inplace=True, ascending=False)
+        data['cross encoder score'] = cross_encoder.predict(sentence_combinations)
+        data.sort_values(by='cross encoder score', inplace=True, ascending=False)
         return data
 
 
@@ -117,7 +117,12 @@ class SearchEngine:
 # Run
 # =========== #
 
-    def tab1_engine(self, question: str, run_cross_encoder="No", testament="All",k=5,relevance=.55) -> dict[str,str]:
+    def tab1_engine(self, question: str, 
+                    run_cross_encoder:str=0, 
+                    testament:str="Whole Bible",
+                    k:int=5,
+                    relevance:float=.50) -> dict[str,str]:
+        
         # Set up Vars
         self.tab1_user_question = question
         self.tab1_user_k = k
@@ -127,18 +132,19 @@ class SearchEngine:
         # Retrieve Top K Most Similar Results
         self.verse_data['similarity score'] = self.measure_embedding_similarity(self.tab1_user_question, embeddings)
         # Decide whether to cross encode or not
-        if run_cross_encoder == "Yes":
+        if run_cross_encoder == 1:
             print("Cross Encoding...")
             response = self.tab1_perform_cross_encode()
+            # Remove embeddings column
+            keep_columns = ['book', "chapter", 'text', 'similarity score', 'cross encoder score']
         else:
             # Return Chunks With Highest Similarity (Text)
             response = self.get_similar_texts(df=self.verse_data, 
                                                 k=self.tab1_user_k, 
                                                 measurement_column=self.measurement_column,
                                                 relevance=self.tab1_user_relevance)
-
-        # Remove embeddings column
-        keep_columns = ['book', "chapter", 'text', 'similarity score']
+            # Remove embeddings column
+            keep_columns = ['book', "chapter", 'text', 'similarity score']
         response = response[keep_columns]
         
         return response
