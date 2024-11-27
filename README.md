@@ -9,13 +9,6 @@ Application for semantic search of bible text.
 
 ## Changelog
 
-- Add relevance_filter to search
-
-- Test out cross encoder and integrate into Search class
-
-- Build out front end
-    - picker for level of abstraction.  Will want a way to switch to any level of abstraction [chapter, verse, other]
-
 - Wire up front end with SearchEngine class.  
     - All descriptions, etc.
 
@@ -29,10 +22,7 @@ Application for semantic search of bible text.
 ## Improvements
 
 Cross Encoder
-
-- Add cross_encoder attributes
-    - Currently works on the ~ 5 or so observations (not intended behavior)
-    - switch to have larger number of observations to run cross encoder on
+- Research how to tune
 
 
 Semantic Search

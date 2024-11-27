@@ -17,7 +17,9 @@ class SearchEngine:
 
         # Global App Variables
         self.app_name = fe_variables.APP_NAME
-
+        self.measurement_column:str = 'similarity score'
+        # Override k to perform cross encoding.
+        self.cross_encoder_k:int = 80
 
         # Tab 1 Variables
         self.tab1_page_name: str = fe_variables.TAB1_PAGE_NAME
@@ -25,6 +27,8 @@ class SearchEngine:
         self.tab1_instructions = fe_variables.TAB1_INSTRUCTIONS
 
         self.tab1_user_question: str = None
+        self.tab1_user_k:int = None
+        self.tab1_user_relevance:float = None
 
 
 # =========== #
@@ -64,30 +68,50 @@ class SearchEngine:
         return [self.vector_similarity(query_embedding, embedding) for embedding in embeddings]
 
 
-    def get_similar_texts(self, df, k, column):
+    def get_similar_texts(self, df:dict[str,str], k:int=None, measurement_column:str=None, relevance:float=None) -> dict[str,str]:
         """
         Slice a dataframe on the top k results.  Sort the sliced dataframe descending on similarity score.
 
         If there are repeated results in top 5, keep them all.
         """
-        response = df.nlargest(k, columns=[column],keep='all')
-        response = response.sort_values(by=column, ascending=False)
+        # Trim to obs above relevance threshold
+        response = df[df[measurement_column]>=relevance]
+        # Trim to num obs user expects
+        response = df.nlargest(k, columns=[measurement_column],keep='all')
+        response = response.sort_values(by=measurement_column, ascending=False)
         return response
 
 
-    def cross_encode(self, data, query):
-        # Sentence Combinations
-        ## TODO: Need to get this model into the models folder
+# =========== #
+# Cross Encoding
+# =========== #
+
+    def cross_encode(self, data:dict[str,str], query:str) -> dict[str,str]:
+        """ Perform cross encoding. """
+        # Vars      
         cross_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
-
         corpus = data['text'].tolist()
+        # Pair sentences
         sentence_combinations = [[query, corpus_sentence] for corpus_sentence in corpus]
-
+        # Predict cross encoder score
         data['cross_encoder_score'] = cross_encoder.predict(sentence_combinations)
-
         data.sort_values(by='cross_encoder_score', inplace=True, ascending=False)
-
         return data
+
+
+    def tab1_perform_cross_encode(self) -> dict[str,str]:
+        """ Utility function to perform cross encoding. """
+        # Return Chunks With Highest Similarity (Text)
+        response = self.get_similar_texts(df=self.verse_data, 
+                                            k=self.cross_encoder_k, 
+                                            measurement_column=self.measurement_column,
+                                            relevance=self.tab1_user_relevance)
+        # Cross encode to get final response
+        response = self.cross_encode(data=response, 
+                                    query=self.tab1_user_question)
+        # Slice to user k preference
+        response = response.iloc[:self.tab1_user_k]
+        return response
 
 # =========== #
 # Run
@@ -95,23 +119,23 @@ class SearchEngine:
 
     def tab1_engine(self, question: str, run_cross_encoder="No", testament="All",k=5,relevance=.55) -> dict[str,str]:
         # Set up Vars
+        self.tab1_user_question = question
+        self.tab1_user_k = k
+        self.tab1_user_relevance = relevance
+
         embeddings = self.verse_data['embeddings'].tolist()
-
         # Retrieve Top K Most Similar Results
-        self.verse_data['similarity score'] = self.measure_embedding_similarity(question, embeddings)
-
+        self.verse_data['similarity score'] = self.measure_embedding_similarity(self.tab1_user_question, embeddings)
         # Decide whether to cross encode or not
         if run_cross_encoder == "Yes":
-            # Add extra k to cross encode with
-            k=75
-            # Return Chunks With Highest Similarity (Text)
-            response = self.get_similar_texts(self.verse_data, k, 'similarity score')
             print("Cross Encoding...")
-            # Cross encode to get final response
-            response = self.cross_encode(response, question)
+            response = self.tab1_perform_cross_encode()
         else:
             # Return Chunks With Highest Similarity (Text)
-            response = self.get_similar_texts(self.verse_data, k, 'similarity score')
+            response = self.get_similar_texts(df=self.verse_data, 
+                                                k=self.tab1_user_k, 
+                                                measurement_column=self.measurement_column,
+                                                relevance=self.tab1_user_relevance)
 
         # Remove embeddings column
         keep_columns = ['book', "chapter", 'text', 'similarity score']
