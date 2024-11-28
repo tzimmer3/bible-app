@@ -11,10 +11,11 @@ Application for semantic search of bible text.
 
 (internet)
 ### Front end with SearchEngine class: 
-    - Radio Buttons - display vs actual value
-    - Check box - what value comes from gradio
-    - Slider - how to make interactive?
     - Inputs - how to send a list ... @btn.click
+
+### Static Values in Front End, Search Class
+    - Move these to be_variables or fe_variables and import in __init__
+    - Testament, Relevance values, Level of Abstraction
 
 ### Deployment:
 - Poetry

@@ -113,12 +113,29 @@ class SearchEngine:
         response = response.iloc[:self.tab1_user_k]
         return response
 
+
+# =========== #
+# Utilities
+# =========== #
+
+    def transform_relevance_values(self):
+        """ Transforms relevance value from string to a float for actual usage. """
+        if self.tab1_user_relevance == "In For A Suprize":
+            self.tab1_user_relevance = .40
+        elif self.tab1_user_relevance == "Pretty Good":
+            self.tab1_user_relevance = .50
+        elif self.tab1_user_relevance == "Only The Best":
+            self.tab1_user_relevance = .60
+        else:
+            self.tab1_user_relevance = .40
+
+
 # =========== #
 # Run
 # =========== #
 
     def tab1_engine(self, question: str, 
-                    run_cross_encoder:str=0, 
+                    run_cross_encoder:bool=False, 
                     testament:str="Whole Bible",
                     k:int=5,
                     relevance:float=.50) -> dict[str,str]:
@@ -127,12 +144,13 @@ class SearchEngine:
         self.tab1_user_question = question
         self.tab1_user_k = k
         self.tab1_user_relevance = relevance
+        self.transform_relevance_values()
 
         embeddings = self.verse_data['embeddings'].tolist()
         # Retrieve Top K Most Similar Results
         self.verse_data['similarity score'] = self.measure_embedding_similarity(self.tab1_user_question, embeddings)
         # Decide whether to cross encode or not
-        if run_cross_encoder == 1:
+        if run_cross_encoder == True:
             print("Cross Encoding...")
             response = self.tab1_perform_cross_encode()
             # Remove embeddings column
@@ -153,8 +171,8 @@ class SearchEngine:
 # if __name__ == '__main__':
 
     # question = "who is my father?"
-    # run_cross_encoder = "No"
-    # testament = "All"
+    # run_cross_encoder = False
+    # testament = "Whole Bible"
     # k=5
     # relevance=.50
 
