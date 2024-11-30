@@ -21,6 +21,7 @@ Application for semantic search of bible text.
 - Poetry
 - Dockerfile
 - docker-compose
+- write app.py
 
 ### Data:
 - Extract ESV and structure, put in app/data/.  Replace in flow.
@@ -29,8 +30,18 @@ Application for semantic search of bible text.
 
 ## Improvements
 
+Analytics
+- Logging of params, user query, and returned output
+- What can be done with this info?
+
 Cross Encoder
 - Research how to tune
 
+Parse text
+
 Semantic Search
 - Check out other LLMs for semantic search
+
+Other Biblical Translations
+
+Front End updates

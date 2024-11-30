@@ -231,25 +231,3 @@ class SearchEngine:
 #     response = df.nlargest(k, columns=['similarity score'],keep='all')
 #     response = response.sort_values(by='similarity score', ascending=False)
 #     return response
-
-
-# # ================== #
-# #  Run (score.py)
-# # ================== #
-
-# def run(question: str, k: int, embeddings, df) -> dict[str,str]:
-
-#     # Retrieve Top K Most Similar Results
-#     df['similarity score'] = measure_embedding_similarity(question, embeddings)
-
-#     # Count number of tokens in each article
-#     df['token count'] = df['text'].apply(get_num_tokens)
-    
-#     # Return Chunks With Highest Similarity (Text)
-#     response = get_similar_texts(df, k)
-
-#     # Remove embeddings column
-#     keep_columns = ['book', "chapter", 'text', 'token count', 'similarity score']
-#     response = response[keep_columns]
-    
-#     return response
