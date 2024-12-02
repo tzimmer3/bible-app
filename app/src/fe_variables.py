@@ -18,6 +18,7 @@ TAB4_PAGE_NAME = "Need Help?"
 
 ## Page Titles
 TAB1_TITLE = "<h1>Bible Reference Assistant</h1>"
+TAB4_TITLE = "<h1>FAQ</h1>"
 
 
 ## Page Instructions

@@ -18,10 +18,9 @@ Application for semantic search of bible text.
     - Testament, Relevance values, Level of Abstraction
 
 ### Deployment:
-- Poetry
-- Dockerfile
-- docker-compose
-- write app.py
+** if requirements does not work, add these.  Any specific thing to install for fastapi?
+requests==2.26.0
+validators==0.20.0
 
 ### Data:
 - Extract ESV and structure, put in app/data/.  Replace in flow.
