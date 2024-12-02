@@ -1,8 +1,8 @@
 version: '3.3'
 services: 
   gradio-chat:
-  image: god:latest
-  container_name: bible-app
+  image: cwj/bible:latest
+  container_name: cwj.bible-app
   build:
     context: .
     dockerfile: Dockerfile
