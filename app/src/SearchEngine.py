@@ -16,19 +16,24 @@ class SearchEngine:
         self.verse_data = pd.read_json(be_variables.VERSE_FILE_NAME)
 
         # Global App Variables
-        self.app_name = fe_variables.APP_NAME
+        self.app_name:str = fe_variables.APP_NAME
         self.measurement_column:str = 'similarity score'
         # Override k to perform cross encoding.
         self.cross_encoder_k:int = 80
 
         # Tab 1 Variables
-        self.tab1_page_name: str = fe_variables.TAB1_PAGE_NAME
-        self.tab1_title = fe_variables.TAB1_TITLE
-        self.tab1_instructions = fe_variables.TAB1_INSTRUCTIONS
-
+        self.tab1_page_name:str = fe_variables.TAB1_PAGE_NAME
+        self.tab1_title:str = fe_variables.TAB1_TITLE
+        self.tab1_instructions:str = fe_variables.TAB1_INSTRUCTIONS
+            # params
         self.tab1_user_question: str = None
         self.tab1_user_k:int = None
         self.tab1_user_relevance:float = None
+
+        # Tab 4 Variables
+        self.tab4_page_name:str = fe_variables.TAB4_PAGE_NAME
+        self.tab4_title:str = fe_variables.TAB4_TITLE
+        self.tab4_instructions:str = fe_variables.TAB4_INSTRUCTIONS
 
 
 # =========== #

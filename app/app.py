@@ -1,11 +1,34 @@
 import gradio as gr
+<<<<<<< HEAD
+=======
+from fastapi import FastAPI, Request
+>>>>>>> 6748a5aee0b0a8a43f366eedbc5f05158b51c516
 
 from src.SearchEngine import SearchEngine
 engine = SearchEngine()
 
+<<<<<<< HEAD
 
 # Creating a Gradio interface for the chatbot
 with gr.Blocks() as demo:
+=======
+# Create FastAPI Object
+app = FastAPI()
+
+
+# ----------------------- #
+#
+#   Gradio App
+#
+# ----------------------- #
+
+# ====== #
+# Tab1: Chat
+# ====== #
+
+# Creating a Gradio interface for the chatbot
+with gr.Blocks() as engine.tab1_page_name:
+>>>>>>> 6748a5aee0b0a8a43f366eedbc5f05158b51c516
     title = gr.HTML(engine.tab1_title)
     instructions = gr.HTML(engine.tab1_instructions)
 
@@ -26,5 +49,28 @@ with gr.Blocks() as demo:
     # Execute the function
     tab1_submit_button.click(fn=engine.tab1_engine, inputs=tab1_inputs, outputs=output)
 
+<<<<<<< HEAD
 # Launching the Gradio interface
 demo.launch(share=True, debug=True)
+=======
+
+# ====== #
+# Tab4: FAQ
+# ====== #
+with gr.Blocks(theme=gr.themes.Glass()) as engine.tab4_title:
+    title = gr.HTML(engine.tab4_title)
+    # Instructions
+    instructions = gr.Markdown(value=engine.tab4_instructions)
+
+
+# ====== #
+# Put it together
+# ====== #
+
+# Assemble gradio app
+demo = gr.TabbedInterface([engine.tab1_page_name, engine.tab4_page_name], [engine.tab1_title, engine.tab4_title], title=engine.app_name)
+
+# application = gr.mount_gradio_app(app, demo, path="/home", auth_dependency=engine.get_token)
+# Mount gradio app into FastAPI
+application = gr.mount_gradio_app(app, demo, path="/home")
+>>>>>>> 6748a5aee0b0a8a43f366eedbc5f05158b51c516
