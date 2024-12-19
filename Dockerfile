@@ -1,5 +1,5 @@
 FROM python:3.9-buster
-EXPOSE 8000
+EXPOSE 8081
 WORKDIR /app
 
 RUN python -m pip install --upgrade pip && \

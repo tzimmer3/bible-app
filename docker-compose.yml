@@ -1,12 +1,15 @@
 version: '3.3'
 services: 
   gradio-chat:
-  image: god:latest
-  container_name: bible-app
-  build:
-    context: .
-    dockerfile: Dockerfile
-  ports:
-    - "8000:8000"
-  environment:
+    image: bibleapp1:latest
+    container_name: bibleapp1
+    build:
+      context: .
+      dockerfile: Dockerfile
+  # env_file:
+  #   - path: .env
+  #     required: false
+    ports:
+      - "8081:80"
+    # environment:
     # ENVIRONMENT_VARIABLE: $ENVIRONNMENT_VARIABLE  <- none yet, but they go here

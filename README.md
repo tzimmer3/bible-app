@@ -45,3 +45,18 @@ Semantic Search
 Other Biblical Translations
 
 Front End updates
+
+
+## Docker Commands
+
+- docker build -t god:latest .
+- docker-compose up
+
+- docker run -d -p "8081:80" ImageID
+
+- docker images
+
+- Having issue with huggingface_hub pip installation
+ cannot import name 'cached_download' from 'huggingface_hub'
+
+ likely need to retry creating the local env and potentially using poetry
