@@ -5,10 +5,10 @@ description = ""
 authors = ["Tyler Zimmer <t_zimmer3@yahoo.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "bible-app"}]
+packages = [{include = "bibleapp"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.9.5"
 gradio = "4.26.0"
 gunicorn = "^21.2.0"
 aiohttp = "^3.7.4"

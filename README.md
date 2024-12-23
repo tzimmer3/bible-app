@@ -58,8 +58,8 @@ Front End updates
 # Build and Test 
 To get started I recommend first creating a python virtual environment and running the app
 with conda you can do this with
-- `conda create -n mooring pip`
-- `conda activate mooring`
+- `conda create -n bible_app_env pip`
+- `conda activate bible_app_env`
 - `pip install -r app/requirements.txt`
 - create a file called `.env` and put the following inside
   - `DR_API_KEY="************************************" # replace with your DR endpoint key`
@@ -71,14 +71,13 @@ This step is to make sure that your requirements can support your application
 Why? sometimes your local python venv and your requirements file become deysnced through ad-hoc pip-installs etc
 This step makes ure this didnt happen.
 
-1. `docker build -t mooring:latest .`
-2. `docker run -p 8000:8000 mooring`
+1. `docker build -t bibleapp1:latest .`
+2. `docker run -p 8000:8000 bibleapp1`
 3. Open your browser and go to `localhost:8000` to test
 
 ## To emulate the pipeline run to test variable injection
-This step emulates the variable injection that hapeens in 
+This step emulates the variable injection that happens in :
 `pipeline/publish-app-service.yml`
-[Location of the actual secret if the key needs updating](https://portal.azure.com/#@chevron.onmicrosoft.com/asset/Microsoft_Azure_KeyVault/Secret/https://mlop-t101-cvx.vault.azure.net/secrets/dr-api-key)
 
 1. docker compose build
 2. docker compose up
