@@ -7,6 +7,55 @@ Application for semantic search of bible text.
 - Check README in /app/data/ for data descriptions
 
 
+## To update the python environment 
+1. make changes to `pyproject.toml` to add additional packages
+2. `poetry lock`
+3. `poetry export --without-hashes --format=requirements.txt > app/requirements.txt`
+
+
+## Startup/Deployment Commands
+
+## 1. Jupyter Notebook
+  - Run search_demo.ipynb with question
+
+## 2. Local Gradio app
+  - Run test_front_end.ipynb with front end
+
+## 3. FastAPI Developer Mode
+  ### - Open a terminal and put in:
+    $ cd /app/ dir
+    $ fastapi run app.py
+
+
+## 4. Build Docker conatiner
+  ### - Open a terminal and put in:
+    $ `docker build -t bibleapp1:latest .`
+    $ `docker run -p 8000:8000 bibleapp1`
+    - Open your browser and go to `localhost:8000` to test
+or
+
+    $ docker compose build
+    $ docker compose up
+    - Open your browser and go to `localhost:8000` to test
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Changelog
 
 (internet)
@@ -86,11 +135,6 @@ This step emulates the variable injection that happens in :
 Note: This injects varibles into your runtime environment similar to how the azure pipeline will do so with the specified keyvault values.
 This step allows to verify that the variable injection is working as intended.
 
-## To update the python environment 
-1. make changes to `pyproject.toml` to add additional packages
-2. `poetry lock`
-3. `poetry export --without-hashes --format=requirements.txt > app/requirements.txt`
-
 
 ## Docker Commands
 
@@ -103,5 +147,3 @@ This step allows to verify that the variable injection is working as intended.
 
 - Having issue with huggingface_hub pip installation
  cannot import name 'cached_download' from 'huggingface_hub'
-
- likely need to retry creating the local env and potentially using poetry

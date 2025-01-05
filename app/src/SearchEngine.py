@@ -8,12 +8,48 @@ import src.fe_variables as fe_variables
 
 
 
+import os
+
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+def embed_text(string):
+    tokenizer = AutoTokenizer.from_pretrained("path_to_model_weights")
+    model = AutoModelForSeq2SeqLM.from_pretrained("path_to_model_weights")
+
+    inputs = tokenizer.encode("Translate this sentence", return_tensors='pt')
+    return model.generate(inputs, max_length=125)
+
+
+def find_file(filename, directory):
+    """
+    Finds a file in a given directory.
+
+    Args:
+        filename (str): The name of the file to search for.
+        directory (str): The directory to search in.
+
+    Returns:
+        str: The full path to the file if found, otherwise None.
+    """
+
+    for root, dirs, files in os.walk(directory):
+        if filename in files:
+            return os.path.join(root, filename)
+
+    return None
+
+
+
 class SearchEngine:
 
     def __init__(self):
 
+        # self.verse_data = pd.read_json(be_variables.VERSE_FILE_NAME)
+        file = find_file("KJV_chapter_search.json", "C:\\Users\\t_zim\\code\\bible-app\\app\\data")
+        model_path = find_file("SentBERTmodel.pkl", "C:\\Users\\t_zim\\code\\bible-app\\app\\model")
+
         # Data
-        self.verse_data = pd.read_json(be_variables.VERSE_FILE_NAME)
+        self.verse_data = pd.read_json(file)
 
         # Global App Variables
         self.app_name:str = fe_variables.APP_NAME
@@ -35,6 +71,7 @@ class SearchEngine:
         self.tab4_title:str = fe_variables.TAB4_TITLE
         self.tab4_instructions:str = fe_variables.TAB4_INSTRUCTIONS
 
+        self.MODEL_PATH:str = model_path
 
 # =========== #
 # Search Functionality
@@ -45,7 +82,7 @@ class SearchEngine:
         Generate embeddings on a string of text.
         """
         if model==None:
-            model = load('./model/SentBERTmodel.pkl')
+            model = load(self.MODEL_PATH)
 
         return model.encode(text)
 

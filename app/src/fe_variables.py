@@ -17,8 +17,8 @@ TAB1_PAGE_NAME = "1. Bible Lookup"
 TAB4_PAGE_NAME = "Need Help?"
 
 ## Page Titles
-TAB1_TITLE = "<h1>Bible Reference Assistant</h1>"
-TAB4_TITLE = "<h1>FAQ</h1>"
+TAB1_TITLE = "Bible Reference Assistant"
+TAB4_TITLE = "FAQ"
 
 
 ## Page Instructions
@@ -26,7 +26,6 @@ TAB1_INSTRUCTIONS = "<h2>Instructions</h2>"\
                             "<b>Enter a question or statement to retrieve verses from the Bible to answer it."\
                             "<p></p>" \
                             "<li>Clicking 'Search The Word' will perform a lookup.</li>"\
-                            "<li>Clicking run will perform a quick lookup.</li>"\
                             "<li>Clicking run will perform a quick lookup.</li>"\
                             "<li>Selecting advanced search will perform a longer lookup that should return better results.</li>"\
 

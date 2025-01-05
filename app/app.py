@@ -44,7 +44,7 @@ with gr.Blocks() as engine.tab1_page_name:
 # ====== #
 # Tab4: FAQ
 # ====== #
-with gr.Blocks(theme=gr.themes.Glass()) as engine.tab4_title:
+with gr.Blocks(theme=gr.themes.Glass()) as engine.tab4_page_name:
     title = gr.HTML(engine.tab4_title)
     # Instructions
     instructions = gr.Markdown(value=engine.tab4_instructions)
