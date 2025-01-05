@@ -2,13 +2,8 @@
 Application for semantic search of bible text.
 
 
-## Notes
-
-- Check README in /app/data/ for data descriptions
-
-
 ## To update the python environment 
-1. make changes to `pyproject.toml` to add additional packages
+1.  make changes to `pyproject.toml` to add additional packages
 2. `poetry lock`
 3. `poetry export --without-hashes --format=requirements.txt > app/requirements.txt`
 
@@ -24,7 +19,9 @@ Application for semantic search of bible text.
 ## 3. FastAPI Developer Mode
   ### - Open a terminal and put in:
     $ cd /app/ dir
-    $ fastapi run app.py
+    $ uvicorn app:application
+      
+** where app is the name of the python file and application is the variable in the python file
 
 
 ## 4. Build Docker conatiner
@@ -44,7 +41,8 @@ or
 
 
 
-
+## Notes
+- Check README in /app/data/ for data descriptions (Not correct right now)
 
 
 
@@ -67,13 +65,14 @@ or
     - Testament, Relevance values, Level of Abstraction
 
 ### Deployment:
-** if requirements does not work, add these.  Any specific thing to install for fastapi?
-requests==2.26.0
-validators==0.20.0
+    - Issue with huggingface_hub installation.  Seems like the issue is something with the cache:
+    https://huggingface.co/docs/huggingface_hub/main/en/guides/overview
+
 
 ### Data:
 - Extract ESV and structure, put in app/data/.  Replace in flow.
 - Add Section heads as a column  --  later a level of abstraction
+- Would be cool to have it by "paragraph"
 
 
 ## Improvements
