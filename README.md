@@ -2,9 +2,56 @@
 Application for semantic search of bible text.
 
 
-## Notes
+## To update the python environment 
+1.  make changes to `pyproject.toml` to add additional packages
+2. `poetry lock`
+3. `poetry export --without-hashes --format=requirements.txt > app/requirements.txt`
 
-- Check README in /app/data/ for data descriptions
+
+## Startup/Deployment Commands
+
+## 1. Jupyter Notebook
+  - Run search_demo.ipynb with question
+
+## 2. Local Gradio app
+  - Run test_front_end.ipynb with front end
+
+## 3. FastAPI Developer Mode
+  ### - Open a terminal and put in:
+    $ cd /app/ dir
+    $ uvicorn app:application
+      
+** where app is the name of the python file and application is the variable in the python file
+
+
+## 4. Build Docker conatiner
+  ### - Open a terminal and put in:
+    $ `docker build -t bibleapp1:latest .`
+    $ `docker run -p 8000:8000 bibleapp1`
+    - Open your browser and go to `localhost:8000` to test
+or
+
+    $ docker compose build
+    $ docker compose up
+    - Open your browser and go to `localhost:8000` to test
+
+
+
+
+
+
+
+## Notes
+- Check README in /app/data/ for data descriptions (Not correct right now)
+
+
+
+
+
+
+
+
+
 
 
 ## Changelog
@@ -18,13 +65,14 @@ Application for semantic search of bible text.
     - Testament, Relevance values, Level of Abstraction
 
 ### Deployment:
-** if requirements does not work, add these.  Any specific thing to install for fastapi?
-requests==2.26.0
-validators==0.20.0
+    - Issue with huggingface_hub installation.  Seems like the issue is something with the cache:
+    https://huggingface.co/docs/huggingface_hub/main/en/guides/overview
+
 
 ### Data:
 - Extract ESV and structure, put in app/data/.  Replace in flow.
 - Add Section heads as a column  --  later a level of abstraction
+- Would be cool to have it by "paragraph"
 
 
 ## Improvements
@@ -58,8 +106,8 @@ Front End updates
 # Build and Test 
 To get started I recommend first creating a python virtual environment and running the app
 with conda you can do this with
-- `conda create -n mooring pip`
-- `conda activate mooring`
+- `conda create -n bible_app_env pip`
+- `conda activate bible_app_env`
 - `pip install -r app/requirements.txt`
 - create a file called `.env` and put the following inside
   - `DR_API_KEY="************************************" # replace with your DR endpoint key`
@@ -71,14 +119,13 @@ This step is to make sure that your requirements can support your application
 Why? sometimes your local python venv and your requirements file become deysnced through ad-hoc pip-installs etc
 This step makes ure this didnt happen.
 
-1. `docker build -t mooring:latest .`
-2. `docker run -p 8000:8000 mooring`
+1. `docker build -t bibleapp1:latest .`
+2. `docker run -p 8000:8000 bibleapp1`
 3. Open your browser and go to `localhost:8000` to test
 
 ## To emulate the pipeline run to test variable injection
-This step emulates the variable injection that hapeens in 
+This step emulates the variable injection that happens in :
 `pipeline/publish-app-service.yml`
-[Location of the actual secret if the key needs updating](https://portal.azure.com/#@chevron.onmicrosoft.com/asset/Microsoft_Azure_KeyVault/Secret/https://mlop-t101-cvx.vault.azure.net/secrets/dr-api-key)
 
 1. docker compose build
 2. docker compose up
@@ -87,7 +134,15 @@ This step emulates the variable injection that hapeens in
 Note: This injects varibles into your runtime environment similar to how the azure pipeline will do so with the specified keyvault values.
 This step allows to verify that the variable injection is working as intended.
 
-## To update the python environment 
-1. make changes to `pyproject.toml` to add additional packages
-2. `poetry lock`
-3. `poetry export --without-hashes --format=requirements.txt > app/requirements.txt`
+
+## Docker Commands
+
+- docker build -t god:latest .
+- docker-compose up
+
+- docker run -d -p "8081:80" ImageID
+
+- docker images
+
+- Having issue with huggingface_hub pip installation
+ cannot import name 'cached_download' from 'huggingface_hub'

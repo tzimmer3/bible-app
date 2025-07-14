@@ -26,8 +26,6 @@ TAB1_INSTRUCTIONS = "<h2>Instructions</h2>"\
                             "<b>Enter a question or statement to retrieve verses from the Bible to answer it."\
                             "<p></p>" \
                             "<li>Clicking 'Search The Word' will perform a lookup.</li>"\
-                            "<li>Clicking run will perform a quick lookup.</li>"\
-                            "<li>Clicking run will perform a quick lookup.</li>"\
                             "<li>Selecting advanced search will perform a longer lookup that should return better results.</li>"\
 
 

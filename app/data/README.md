@@ -10,7 +10,7 @@ What is the scope?
 Only the Gospel of John from KJV.
 
 Level of Abstraction: Verse
-Columns: []
+Columns: [Testament,Book,Chapter,Verse,Verse_Text,clean_verse_text]
 
 
 ## KJV.csv
@@ -22,15 +22,16 @@ What is the scope?
 Entirety of the King James Version of the bible.
 
 Level of Abstraction: Verse
-Columns: []
+Columns: [Testament,Book,Chapter,Verse,Verse_Text,clean_verse_text]
 
 
 ## masterdata.csv
 
 Why is it here?
-
+Testing with dataset that already has embeddings generated.
 
 What is the scope?
+Gospel of John only
 
 Level of Abstraction: Verse
-Columns: []
+Columns: [Testament,Book,Chapter,Verse,Verse_Text,clean_verse_text,embeddings]

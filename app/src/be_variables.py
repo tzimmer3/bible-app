@@ -5,7 +5,7 @@
 
 # VERSE_FILE_NAME = "data/masterdata.csv"
 
-VERSE_FILE_NAME = "C:\\Users\\t_zim\\Desktop\\Data\\Bible\\KJV_chapter_search.json"
+VERSE_FILE_NAME = "./src/KJV_chapter_search.json"
 
 
 # # Import Data
